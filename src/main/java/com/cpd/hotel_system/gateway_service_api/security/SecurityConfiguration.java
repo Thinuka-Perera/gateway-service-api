@@ -25,20 +25,23 @@ public class SecurityConfiguration {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
         httpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(authorize->
-                        authorize
-                                .pathMatchers("user-service/api/v1/**").permitAll()
-                                .pathMatchers("hotel-management/api/v1/**").permitAll()
-                                .anyExchange().authenticated())
-                .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
+                .authorizeExchange(authorize -> authorize
+                        .pathMatchers("/user-service/api/v1/users/visitors/signup").permitAll() // only signup
+                        .pathMatchers("/hotel-management/api/v1/**").permitAll()
+                        .anyExchange().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtSpec -> {}) // optional custom JWT decoder
+                );
 
-         return  httpSecurity.build();
+        return httpSecurity.build();
     }
+
 
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("https://www.abc.com","https://www.bing.com"));
+          //configuration.setAllowedOrigins(List.of("https://www.abc.com","https://www.bing.com"));
           //All are can be access
         configuration.setAllowedOrigins(List.of("*"));
         //what type of method to access
